@@ -1,0 +1,88 @@
+We Received Your Submission
+
+
+Summarize this email
+qualtrics_survey@cusurveys.colorado.edu
+
+​
+Wang, Haifeng​
+[EXTERNAL EMAIL]
+
+Hello, Haifeng 
+
+Thank you for contributing to the 2026 Researchers Meeting! Your work is critical to the success of this annual meeting. A copy of your submission can be found at the end of this email. 
+
+Please save the dates! The Researchers Meeting will be June 17-18, 2026, in person at the Omni Interlocken Hotel in Broomfield, Colorado. We invite you to take advantage of our discounted room block rates now, as they sell out quickly! 
+
+Registration will open soon. All presenters, facilitators, and participants are required to cover their own registration and travel costs.  
+
+Please keep an eye on our Workshop website and make sure you’re subscribed to Workshop updates so you don’t miss any deadlines or other important information. We will be in touch soon and can’t wait to see you at the Researchers Meeting this summer! 
+
+If you have any questions, please contact us at researchersmeeting@colorado.edu. 
+
+Thank you, 
+
+The Natural Hazards Team 
+
+ 
+
+
+Recipient Data:
+Time Finished: 2026-01-14 18:05:19 MST
+IP: 134.121.20.151
+ResponseID: R_31gFEkmmgK0CR8p
+Link to View Results: Click Here
+URL to View Results: https://cuboulder.yul1.qualtrics.com/apps/single-response-reports/reports/BCKTHA6wWzIRvAsQ_Lny3uOMZuN0F5FeVn7CbC_5BF-394Svzqd1fJfnH2t_lwSfDFHbQgVVTLjNuchXjFwDSgfVqeWzfrSvGqkCwtlZc1cJZmckar-C7lA475n9UPqXEPcwVuGXQ6MySI1ax8yVvaxFsaQHBF5tcOx-opa482W7eZPyLLUm6CMii3B5yPxMsxnMOd5iuZLQ0fjDPcKmMgkwtWc-JKaMoW1chFL8XCAhmEhIAg3iyH4XIe1BufbJlA1yQhKY4VJ5kzi6NIjlsCImrE6ft2Mp_3NJCCY4sK4hEEhptK9btSf4RMJPf_2beBVsS76wEFQ8v7qGiFvxBQ
+
+Response Summary:
+
+Title: Please use APA Title Case (limit 12 words)
+   Scalable Wind Pressure Estimation for Low-Rise Buildings Using Machine Learning
+
+Abstract (Limit 250 words)  Please submit a research abstract that describes your project or pape...
+   Accurate estimation of wind pressure distributions on building envelopes is essential for assessing structural risk and resilience under extreme wind hazards. Wind tunnel testing remains the primary approach for obtaining such data, but it is costly and time-consuming, which limits its applicability for large-scale or portfolio-level hazard analyses. As a result, many buildings of interest are not explicitly represented in available experimental databases.
+   
+   This study presents a data-driven framework for estimating wind pressure fields on low-rise buildings using a Conditional Neural Network. The proposed approach is designed to interpolate existing wind tunnel data across both spatial coordinates on building surfaces and global building and wind characteristics. By conditioning model parameters on building geometry and wind conditions, the method captures complex, nonlinear aerodynamic behavior while maintaining a unified and computationally efficient representation.
+   
+   The framework is validated using wind tunnel measurements for low-rise buildings under a range of wind directions and configurations. Results demonstrate that the Conditional Neural Network accurately reproduces key statistical characteristics of wind pressure distributions and provides reliable estimates for building configurations that were not explicitly tested. Compared to conventional interpolation approaches, the proposed method improves accuracy while substantially reducing the need for additional wind tunnel experiments.
+   
+   The findings highlight the potential of machine learning–based interpolation to enable scalable wind pressure estimation for hazard and resilience applications. By reducing dependence on extensive experimental testing, the proposed approach supports rapid fragility assessment, portfolio-level risk analysis, and data-driven evaluation of wind-exposed infrastructure.
+
+Research Status
+   Complete (data collection and analysis both complete)
+
+Focal Area(s) The submitted work is related to (select all that apply):
+   Resilience
+   Research Methods or Pedagogy
+
+Discipline(s) Please select which of the following disciplinary categories best captures the area...
+   Engineering
+   Disaster Science
+
+Student or Early Career Status Does the presenter identify as an early-career scholar, here defin...
+   Yes (Early Career Scholar)
+
+First Name
+   Haifeng
+
+Last Name
+   Wang
+
+Affiliation
+   Washington State University
+
+Email
+   haifeng.wang@wsu.edu
+
+Do you have another author?
+   No
+
+Authorship in Multiple Submissions
+   I acknowledge that if I am the presenter in multiple accepted submissions, I will be asked to select one abstract to present at 2026 Researchers Meeting.
+
+Funding Acknowledgement Please include any required acknowledgement of funding below.
+   N/A
+
+Session Moderator Apart from presenting, would you be interested in moderating a session during t...
+   Yes
+

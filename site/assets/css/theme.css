@@ -1,0 +1,627 @@
+/* =============================================================================
+   WSU Light Theme for reveal.js  —  NHERI 2026 Researchers Meeting deck
+   Geometry-Aware Conditional Neural Network for Wind Pressure Estimation
+   -----------------------------------------------------------------------------
+   Palette (Washington State University):
+     Crimson (primary)        #981E32
+     Dark crimson (headers)   #6A1226
+     Accent crimson           #A60F2D
+     Gray (secondary text)    #5E6A71
+     Backgrounds              #FFFFFF / #F7F7F8
+     Hairlines                #E6E6E9
+     Teal                     #2A7F8E
+   Self-hosted Inter (no CDN). Falls back to a robust system sans stack.
+   ============================================================================= */
+
+/* ---- Self-hosted Inter (offline + PDF safe) ------------------------------- */
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../../vendor/fonts/inter-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("../../vendor/fonts/inter-latin-500-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 600; font-display: swap;
+  src: url("../../vendor/fonts/inter-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter"; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../../vendor/fonts/inter-latin-700-normal.woff2") format("woff2");
+}
+
+:root {
+  --wsu-crimson:      #981E32;
+  --wsu-crimson-dark: #6A1226;
+  --wsu-crimson-acc:  #A60F2D;
+  --wsu-gray:         #5E6A71;
+  --wsu-ink:          #25292C;
+  --wsu-bg:           #FFFFFF;
+  --wsu-bg-soft:      #F7F7F8;
+  --wsu-hairline:     #E6E6E9;
+  --wsu-teal:         #2A7F8E;
+  --sans: "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* Slide dimensions */
+  --slide-h: 700px;
+  /* Bottom clearance so fixed footer/progress bar never overlaps body */
+  --footer-clearance: 40px;
+}
+
+/* ---- Base deck ------------------------------------------------------------ */
+.reveal-viewport { background: var(--wsu-bg); }
+
+.reveal {
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--wsu-ink);
+  letter-spacing: 0.002em;
+}
+
+.reveal .slides { text-align: left; }
+.reveal .slides section {
+  line-height: 1.26;
+  padding-bottom: var(--footer-clearance);
+  box-sizing: border-box;
+}
+
+/* ---- Headings (TASK 2 — bolder) ------------------------------------------ */
+.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+  font-family: var(--sans);
+  color: var(--wsu-crimson-dark);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  margin: 0 0 0.38em 0;
+  text-shadow: none;
+}
+.reveal h1 { font-size: 1.9em; }
+/* Slightly larger + stronger for content slides */
+.reveal h2 { font-size: 1.42em; font-weight: 700; }
+.reveal h3 { font-size: 1.07em; color: var(--wsu-crimson); font-weight: 600; }
+
+.reveal h2.titled {
+  padding-bottom: 0.22em;
+  border-bottom: 3px solid var(--wsu-crimson);
+  display: inline-block;
+}
+
+.reveal p { margin: 0.32em 0; }
+.reveal strong { color: var(--wsu-crimson); font-weight: 700; }
+.reveal em { color: var(--wsu-gray); font-style: italic; }
+.reveal a { color: var(--wsu-crimson-acc); text-decoration: none; }
+.reveal a:hover { text-decoration: underline; }
+
+/* Tighten list spacing to reduce vertical overflow risk (TASK 3) */
+.reveal ul { list-style: none; margin-left: 0; margin-top: 0.1em; margin-bottom: 0.1em; }
+.reveal ul li { position: relative; padding-left: 1.1em; margin: 0.22em 0; }
+.reveal ul li::before {
+  content: ""; position: absolute; left: 0; top: 0.55em;
+  width: 0.42em; height: 0.42em; background: var(--wsu-crimson);
+  border-radius: 2px; transform: rotate(45deg);
+}
+.reveal ul ul li::before { background: var(--wsu-gray); }
+.reveal .muted { color: var(--wsu-gray); }
+.reveal .small { font-size: 0.72em; }
+.reveal .tiny  { font-size: 0.58em; color: var(--wsu-gray); }
+
+/* ---- Slide chrome -------------------------------------------------------- */
+.kicker {
+  font-size: 0.5em; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.16em; color: var(--wsu-gray); margin-bottom: 0.5em;
+}
+.reveal .slide-number {
+  font-family: var(--sans); color: var(--wsu-gray); background: transparent;
+  font-size: 16px; right: 14px; bottom: 10px;
+}
+/* Legacy in-section footer (kept for compat) */
+.deck-footer {
+  position: absolute; left: 0; bottom: 14px; font-size: 13px;
+  letter-spacing: 0.14em; color: var(--wsu-gray); font-weight: 600;
+  text-transform: uppercase; opacity: 0.8;
+}
+.deck-footer .crimson { color: var(--wsu-crimson); }
+
+/* Fixed footer — every slide, immune to centering */
+.deck-footer-fixed {
+  position: fixed;
+  left: 30px; bottom: 10px;
+  z-index: 40;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--wsu-gray); opacity: 0.82;
+  pointer-events: none;
+}
+.deck-footer-fixed .crimson { color: var(--wsu-crimson); }
+
+
+/* ============================================================================
+   TASK 1 — TITLE SLIDE: robust flex centering
+   Overrides reveal's global `center` so it works whether center is on or off.
+   ============================================================================ */
+/* reveal.js renders sections as display:block; we must force flex with !important
+   and give an explicit height so justify-content:center has room to work. */
+.reveal .slides section#title-slide,
+#title-slide {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  /* Explicit slide height so vertical centering fires */
+  height: 700px !important;
+  min-height: 700px !important;
+  max-height: 700px !important;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 24px 40px 40px !important;
+}
+
+/* Every child of the title slide centers itself */
+#title-slide .wordmark,
+#title-slide .title-rule,
+#title-slide .title-main,
+#title-slide .title-sub,
+#title-slide .authors,
+#title-slide .affil,
+#title-slide .venue {
+  width: 100%;
+  text-align: center;
+}
+
+/* ---- Title-slide components ---------------------------------------------- */
+.wordmark {
+  font-weight: 700; letter-spacing: 0.18em; color: var(--wsu-crimson);
+  font-size: 0.52em; text-transform: uppercase;
+}
+.title-main {
+  font-size: 1.55em; line-height: 1.1; color: var(--wsu-crimson-dark);
+  margin: 0.35em auto 0.3em; max-width: 16em;
+}
+.title-sub {
+  font-size: 0.9em; color: var(--wsu-gray); margin: 0.1em auto 0.2em;
+  max-width: 22em;
+}
+.title-rule {
+  width: 220px; height: 4px;
+  background: linear-gradient(90deg, var(--wsu-crimson), var(--wsu-crimson-acc));
+  margin: 0.5em auto 0.7em; border-radius: 3px;
+  animation: growRule 1.1s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes growRule { from { width: 0; opacity: 0; } to { width: 220px; opacity: 1; } }
+
+.authors { font-size: 0.78em; color: var(--wsu-ink); margin: 0.2em 0; }
+.authors .pres { color: var(--wsu-crimson); font-weight: 700; }
+.affil { font-size: 0.56em; color: var(--wsu-gray); margin-top: 0.1em; }
+.venue { font-size: 0.56em; color: var(--wsu-gray); margin-top: 1.1em; line-height: 1.5; }
+.venue .sess { color: var(--wsu-crimson); font-weight: 600; }
+
+
+/* ============================================================================
+   TASK 2 — SECTION DIVIDER SLIDES (bolder redesign)
+   Usage:  <section class="section-divider"> ... </section>
+           <section class="section-divider is-appendix"> ... </section>
+   ============================================================================ */
+section.section-divider {
+  background: linear-gradient(135deg, var(--wsu-crimson) 0%, var(--wsu-crimson-dark) 100%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  min-height: var(--slide-h);
+  height: 100%;
+  padding: 24px 60px !important;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Large faded section number in the background */
+section.section-divider .section-num {
+  font-size: 10em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.08);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* White section title */
+section.section-divider h2 {
+  color: #FFFFFF !important;
+  font-size: 2.2em !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.3em 0;
+  position: relative;
+  z-index: 1;
+}
+
+section.section-divider h3 {
+  color: rgba(255, 255, 255, 0.78) !important;
+  font-size: 0.9em !important;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+section.section-divider p,
+section.section-divider .kicker {
+  color: rgba(255, 255, 255, 0.72);
+  position: relative;
+  z-index: 1;
+}
+
+/* Thin white divider rule under the section heading */
+section.section-divider .section-rule {
+  width: 80px; height: 3px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 3px;
+  margin: 0.5em auto 0.7em;
+  position: relative;
+  z-index: 1;
+}
+
+/* Appendix variant — darker, gray-crimson feel */
+section.section-divider.is-appendix {
+  background: linear-gradient(135deg, #3B3F43 0%, #25292C 100%) !important;
+}
+
+section.section-divider.is-appendix h2 {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Small "BACKUP" corner badge on appendix dividers */
+section.section-divider.is-appendix::after {
+  content: "BACKUP";
+  position: absolute;
+  top: 18px; right: 22px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  z-index: 10;
+}
+
+
+/* ============================================================================
+   TASK 3 — OVERLAP-SAFE CSS
+   ============================================================================ */
+
+/* ---- Figure height caps --------------------------------------------------- */
+/* Default: paired figure sharing a row with text */
+.figure img {
+  display: block; width: auto; height: auto;
+  max-width: 100%;
+  max-height: 300px;   /* cap for row-paired figures */
+  margin: 0 auto;
+  border-radius: 5px;
+}
+
+/* Hero variant: full-width / figure-led slide */
+.figure.hero img {
+  max-height: 430px;
+}
+
+/* Bare figure (no card chrome) inherits the same cap */
+.figure.bare img { max-height: 300px; }
+.figure.bare.hero img { max-height: 430px; }
+
+.native-arch {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  max-height: 430px;
+  margin: 0 auto;
+  overflow: visible;
+}
+.native-arch__side {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  fill: #111;
+}
+.native-arch__input,
+.native-arch__box {
+  fill: #fff;
+  stroke: #1f2328;
+  stroke-width: 3;
+}
+.native-arch__input {
+  fill: #d8d8d8;
+}
+.native-arch__output {
+  fill: #9d9cff;
+  stroke: #1f2328;
+  stroke-width: 3;
+}
+.native-arch__input-text,
+.native-arch__output-text {
+  font-family: Inter, Arial, sans-serif;
+  font-size: 27px;
+  font-weight: 500;
+  fill: #111;
+}
+.native-arch__box-text {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
+  fill: #111;
+}
+.native-arch__wire {
+  fill: none;
+  stroke: #1f2328;
+  stroke-width: 3.2;
+  marker-end: url(#arrow-black);
+}
+.native-arch__bus {
+  marker-end: none;
+}
+.native-arch__red {
+  fill: none;
+  stroke: #b21f2d;
+  stroke-width: 3;
+  marker-end: url(#arrow-red);
+}
+.native-arch__focus {
+  fill: none;
+  stroke: #1f2328;
+  stroke-width: 3;
+  stroke-dasharray: 10 9;
+}
+
+/* ---- Figure card ---------------------------------------------------------- */
+.figure {
+  background: var(--wsu-bg);
+  border: 1px solid var(--wsu-hairline);
+  border-radius: 10px; padding: 8px;
+  box-shadow: 0 6px 22px rgba(37,41,44,0.07);
+}
+.figure.bare { border: none; box-shadow: none; padding: 0; background: none; }
+.caption { font-size: 0.5em; color: var(--wsu-gray); margin-top: 0.35em; text-align: center; }
+
+/* ---- Column layout -------------------------------------------------------- */
+.cols { display: flex; gap: 0.75em; align-items: center; }
+
+/* Top-aligned columns — content cannot escape its column height (TASK 3) */
+.cols.top {
+  align-items: flex-start;
+  /* Bound max height so column children never push below the slide */
+  max-height: calc(var(--slide-h) - var(--footer-clearance) - 80px);
+  overflow: hidden;
+}
+
+.col { flex: 1 1 0; min-width: 0; }
+.col-60 { flex: 0 0 58%; }
+.col-40 { flex: 0 0 40%; }
+.col-65 { flex: 0 0 64%; }
+.col-35 { flex: 0 0 34%; }
+
+/* ---- Appendix content slides --------------------------------------------- */
+/* "BACKUP" watermark tag for non-divider appendix slides */
+section.is-appendix .appendix-tag,
+section.is-appendix::after {
+  content: "BACKUP";
+  display: block;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--wsu-gray); opacity: 0.55;
+}
+/* Corner badge via pseudo-element on is-appendix content slides */
+section.is-appendix:not(.section-divider) {
+  position: relative;
+}
+section.is-appendix:not(.section-divider)::after {
+  position: absolute;
+  top: 10px; right: 14px;
+  z-index: 20;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--wsu-gray); opacity: 0.55;
+}
+/* If the author prefers an explicit tag element */
+.appendix-tag {
+  font-size: 0.45em; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--wsu-gray); opacity: 0.55;
+  display: inline-block; margin-bottom: 0.3em;
+}
+
+
+/* ============================================================================
+   TASK 2 (cont.) — BOLDER COMPONENT POLISH
+   ============================================================================ */
+
+/* ---- Stat callout cards -------------------------------------------------- */
+.stat-card {
+  background: linear-gradient(160deg, #FFFFFF 0%, #FBF0F2 100%);
+  border: 1px solid var(--wsu-hairline);
+  border-left: 6px solid var(--wsu-crimson);
+  border-radius: 12px; padding: 0.75em 1em;
+  box-shadow: 0 8px 28px rgba(152,30,50,0.10);
+  margin: 0.3em 0;
+}
+.stat-number {
+  font-size: 1.9em; font-weight: 700; color: var(--wsu-crimson);
+  line-height: 1; letter-spacing: -0.02em;
+}
+.stat-label { font-size: 0.6em; color: var(--wsu-gray); margin-top: 0.2em; font-weight: 500; }
+
+/* ---- Pills --------------------------------------------------------------- */
+.pill-row { display: flex; gap: 0.5em; flex-wrap: wrap; margin: 0.4em 0; }
+.pill {
+  font-size: 0.6em; padding: 0.3em 0.8em; border-radius: 999px;
+  background: var(--wsu-bg-soft); border: 1px solid var(--wsu-hairline);
+  color: var(--wsu-gray); font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.pill.crimson {
+  background: #FBEDF0; border-color: #DDA9B4;
+  color: var(--wsu-crimson-dark); font-weight: 700;
+}
+.pill.teal {
+  background: #EAF4F6; border-color: #A0CDD4;
+  color: #1E6A78; font-weight: 700;
+}
+
+/* ---- Note box ------------------------------------------------------------ */
+.note-box {
+  background: var(--wsu-bg-soft);
+  border: 1px solid var(--wsu-hairline);
+  border-left: 4px solid var(--wsu-teal);
+  border-radius: 10px; padding: 0.55em 0.9em;
+  font-size: 0.74em; color: var(--wsu-ink);
+}
+
+/* ---- Axis cards ---------------------------------------------------------- */
+.axis-card {
+  border: 1px solid var(--wsu-hairline);
+  border-top: 5px solid var(--wsu-crimson);
+  border-radius: 12px; padding: 0.75em 0.9em;
+  background: var(--wsu-bg);
+  box-shadow: 0 6px 22px rgba(37,41,44,0.07);
+  height: 100%;
+}
+.axis-card.alt { border-top-color: var(--wsu-teal); }
+.axis-card h3 { margin-top: 0; }
+.axis-card .small { line-height: 1.4; }
+
+
+/* ============================================================================
+   TASK 4 — PROGRESS BAR + INDICATOR
+   Markup contract:
+     <div class="deck-progress">
+       <div class="deck-progress__track">
+         <div class="deck-progress__fill" style="width: 0%"></div>
+       </div>
+       <div class="deck-progress__meta">
+         <span class="deck-progress__section">Intro</span>
+         <span class="deck-progress__sep">·</span>
+         <span class="deck-progress__pos">1 / 24</span>
+       </div>
+     </div>
+   JS writes .deck-progress__fill width; .deck-progress__section / __pos text.
+   ============================================================================ */
+
+.deck-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  /* No height — sized by children */
+  pointer-events: none;
+}
+
+/* Thin full-width track */
+.deck-progress__track {
+  width: 100%;
+  height: 7px;
+  background: var(--wsu-hairline);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Crimson gradient fill — width driven by JS */
+.deck-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--wsu-crimson) 0%, var(--wsu-crimson-acc) 100%);
+  border-radius: 0 4px 4px 0;
+  transition: width 0.3s ease;
+}
+
+/* Slide / section metadata pill — top-right, just below the track */
+.deck-progress__meta {
+  position: absolute;
+  top: 9px; right: 14px;
+  font-family: var(--sans);
+  font-size: 12px; font-weight: 600;
+  color: var(--wsu-crimson-dark);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--wsu-hairline);
+  border-radius: 999px;
+  padding: 2px 10px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(37,41,44,0.08);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.deck-progress__sep {
+  color: var(--wsu-gray);
+  margin: 0 0.25em;
+}
+
+
+/* ---- 3D building container ----------------------------------------------- */
+.three-wrap {
+  position: relative; width: 100%;
+  border: 1px solid var(--wsu-hairline); border-radius: 12px; overflow: hidden;
+  background: radial-gradient(120% 120% at 30% 10%, #FFFFFF 0%, #F2F3F5 100%);
+  box-shadow: 0 8px 26px rgba(37,41,44,0.08);
+}
+.three-canvas { display: block; width: 100%; height: 100%; }
+.three-hint {
+  position: absolute; right: 10px; bottom: 8px; font-size: 11px; color: var(--wsu-gray);
+  background: rgba(255,255,255,0.75); padding: 2px 7px; border-radius: 6px; pointer-events: none;
+}
+.cp-legend {
+  position: absolute; left: 12px; bottom: 12px; background: rgba(255,255,255,0.86);
+  border: 1px solid var(--wsu-hairline); border-radius: 8px; padding: 6px 8px;
+  font-size: 11px; color: var(--wsu-ink);
+}
+.cp-bar {
+  height: 10px; width: 150px; border-radius: 5px;
+  background: linear-gradient(90deg, #2A7F8E 0%, #BFD7DB 35%, #F2F2F2 50%, #E6A6B2 65%, #981E32 100%);
+  margin-bottom: 3px;
+}
+.cp-ticks { display: flex; justify-content: space-between; color: var(--wsu-gray); }
+
+/* ---- Top-right toolbar --------------------------------------------------- */
+.deck-toolbar {
+  position: fixed; top: 12px; right: 14px; z-index: 60;
+  display: flex; gap: 8px; font-family: var(--sans);
+}
+.deck-toolbar button, .deck-toolbar a {
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--wsu-crimson-dark); background: rgba(255,255,255,0.92);
+  border: 1px solid var(--wsu-hairline); border-radius: 8px; padding: 6px 11px;
+  cursor: pointer; box-shadow: 0 2px 10px rgba(37,41,44,0.08);
+  transition: background 0.15s ease, transform 0.1s ease; text-decoration: none;
+}
+.deck-toolbar button:hover, .deck-toolbar a:hover {
+  background: var(--wsu-crimson); color: #fff; transform: translateY(-1px);
+}
+
+/* Reveal built-in progress bar (keep styled, backup for when custom bar absent) */
+.reveal .progress { color: var(--wsu-crimson); height: 4px; }
+
+/* ---- Entrance animations ------------------------------------------------- */
+.fragment.rise { transform: translateY(16px); opacity: 0; transition: all 0.45s ease; }
+.fragment.rise.visible { transform: translateY(0); opacity: 1; }
+@keyframes pop {
+  0%   { transform: scale(0.85); opacity: 0; }
+  60%  { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.fragment.pop.visible .stat-number { animation: pop 0.55s cubic-bezier(.2,.8,.2,1) both; }
+
+/* ---- Print / export ------------------------------------------------------- */
+@media print {
+  .deck-toolbar       { display: none !important; }
+  .deck-progress      { display: none !important; }
+  .three-hint         { display: none; }
+}
+
+/* ---- Reduced motion ------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .title-rule { animation: none; width: 220px; }
+  .fragment.pop.visible .stat-number { animation: none; }
+  .deck-progress__fill { transition: none; }
+}

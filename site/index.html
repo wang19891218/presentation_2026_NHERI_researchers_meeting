@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Scalable Wind Pressure Estimation for Low-Rise Buildings Using Machine Learning — H. Wang (WSU)</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23981E32'/%3E%3C/svg%3E" />
+  <meta name="author" content="Haifeng Wang" />
+  <meta name="description" content="Scalable Wind Pressure Estimation for Low-Rise Buildings Using Machine Learning — 2026 Natural Hazards Researchers Meeting, Boulder CO." />
+
+  <!-- Vendored reveal.js (offline / GitHub-Pages safe) -->
+  <link rel="stylesheet" href="vendor/reveal/reset.css" />
+  <link rel="stylesheet" href="vendor/reveal/reveal.css" />
+  <link rel="stylesheet" href="vendor/reveal/theme_white.css" id="theme" />
+  <!-- Custom WSU light theme (loaded last to override) -->
+  <link rel="stylesheet" href="assets/css/theme.css" />
+
+  <!-- Resolve bare 'three' specifier used by OrbitControls to the vendored module -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ============================================================
+       CUSTOM PROGRESS BAR + SECTION INDICATOR
+       IDs match the shared markup contract — progress-dev's
+       assets/js/deck-progress.js writes fill width and meta text.
+       Hidden in print via CSS ( @media print in theme.css ).
+  ============================================================ -->
+  <div class="deck-progress" aria-hidden="true">
+    <div class="deck-progress__track">
+      <div class="deck-progress__fill" id="prog-fill"></div>
+    </div>
+    <div class="deck-progress__meta">
+      <span id="prog-section">Intro</span><span class="deck-progress__sep">&middot;</span><span id="prog-pos">1 / 19</span>
+    </div>
+  </div>
+
+  <!-- Top-left toolbar — right side reserved for the progress meta pill -->
+  <div class="deck-toolbar" style="top:20px;left:10px;right:auto;" aria-label="Deck controls">
+    <button id="btn-overview" title="Toggle slide overview grid (or press O / Esc)">&#8862; Overview</button>
+    <a id="btn-pdf" href="?print-pdf" target="_blank" rel="noopener"
+       title="Open print-PDF layout, then use browser Print to PDF">&#10515; PDF</a>
+  </div>
+
+  <!-- Fixed footer (every slide) -->
+  <div class="deck-footer-fixed" aria-hidden="true">
+    <span class="crimson">WSU</span> &nbsp; Scalable Wind Pressure Estimation &mdash; Low-Rise Buildings
+  </div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==============================================================
+           COLUMN 1 · TITLE  (single-slide stack)
+      ============================================================== -->
+      <section>
+        <section id="title-slide" data-background-color="#ffffff" data-section="Intro">
+          <div class="wordmark">Washington State University</div>
+          <div class="title-rule"></div>
+          <h1 class="title-main">Scalable Wind Pressure Estimation for Low-Rise Buildings Using Machine Learning</h1>
+          <p class="title-sub">Geometry-Aware Conditional Neural Network for Surface Pressure Estimation</p>
+          <p class="authors"><span class="pres">Haifeng Wang</span></p>
+          <p class="affil">Washington State University</p>
+          <p class="venue">
+            <span class="sess">2026 Natural Hazards Researchers Meeting</span><br/>
+            &ldquo;Translating Complexity: Assessment Models and Markets in a Changing Climate&rdquo;<br/>
+            Wednesday, June 17, 2026 &nbsp;&middot;&nbsp; Boulder, CO
+          </p>
+        </section>
+      </section>
+
+
+      <!-- ==============================================================
+           COLUMN 2 · PROBLEM / MOTIVATION  (3 slides, no divider needed
+           — audience arrives here directly from the title)
+      ============================================================== -->
+      <section>
+
+        <!-- 2a · Motivation -->
+        <section data-auto-animate data-section="Problem">
+          <div class="kicker">Motivation</div>
+          <h2 class="titled">Wind pressure data for low-rise buildings is scarce &amp; expensive</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <ul>
+                <li class="fragment">Surface pressure on low-rise buildings depends on <strong>wind angle</strong>, <strong>terrain roughness</strong>, and <strong>3D geometry</strong> — all at once.</li>
+                <li class="fragment"><strong>Wind-tunnel testing</strong> is resource-intensive and time-consuming, covering only a <em>limited, discrete</em> set of shapes and conditions.</li>
+                <li class="fragment">Many buildings in regional portfolios are <strong>not in any experimental database</strong>.</li>
+                <li class="fragment">This limits <strong>portfolio-level risk analyses</strong> and rapid fragility assessment under extreme wind hazards.</li>
+                <li class="fragment"><em>Need:</em> a surrogate model that interpolates existing wind-tunnel data &mdash; fast, accurate, and uncertainty-aware.</li>
+              </ul>
+            </div>
+            <div class="col col-40">
+              <!-- Row 1: two real wind-tunnel photos -->
+              <div class="cols" style="gap:0.35em; margin-bottom:0.35em;">
+                <div class="col">
+                  <div class="figure bare fragment">
+                    <img src="assets/img/motivation_wind_tunnel_facility.png" alt="Wind-tunnel facility interior showing building array and turntable" style="max-height:92px;" />
+                    <div class="caption">Wind-tunnel facility</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="figure bare fragment">
+                    <img src="assets/img/motivation_wind_tunnel_model.png" alt="Instrumented physical building model with pressure taps on turntable" style="max-height:92px;" />
+                    <div class="caption">Instrumented model</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Row 2: technical diagram + data visualization -->
+              <div class="cols" style="gap:0.35em; margin-bottom:0.35em;">
+                <div class="col">
+                  <div class="figure bare fragment">
+                    <img src="assets/img/motivation_pressure_tap_layout.png" alt="Technical drawing of pressure-tap layout across walls with wind angle alpha" style="max-height:110px;" />
+                    <div class="caption">Pressure-tap layout (199 taps)</div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="figure bare fragment">
+                    <img src="assets/img/motivation_data_visualization.png" alt="3D wind-tunnel data-visualization web app showing pressure vectors on building" style="max-height:92px;" />
+                    <div class="caption">Measured tap data</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Row 3: problem overview schematic -->
+              <div class="figure fragment" style="margin-top:0.1em;">
+                <img src="assets/img/figure_01_problem_overview.png" alt="Overview of the wind pressure characterization problem for low-rise buildings" style="max-height:88px;" />
+                <div class="caption">Pressure varies with angle, terrain, and shape.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2b · Two Axes -->
+        <section data-section="Problem">
+          <div class="kicker">Problem framing</div>
+          <h2 class="titled">Data-driven interpolation along two axes</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <div class="cols top" style="gap:0.6em;">
+                <div class="col">
+                  <div class="axis-card fragment">
+                    <h3>Intra-test</h3>
+                    <p class="small">Within a <em>tested</em> building: interpolate pressure over surface <strong>coordinates</strong> and <strong>wind angles</strong>.</p>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="axis-card alt fragment">
+                    <h3>Inter-test</h3>
+                    <p class="small">Across <em>buildings</em>: generalize to <strong>new geometries</strong> and conditions never tested in a wind tunnel.</p>
+                  </div>
+                </div>
+              </div>
+              <p class="fragment" style="margin-top:0.55em;">A conventional neural network handles one axis &mdash; <strong>not both simultaneously</strong>. Our model does both.</p>
+            </div>
+            <div class="col col-40">
+              <div class="figure fragment">
+                <img src="assets/img/figure_02_literature_taxonomy.png" alt="Literature taxonomy of intra- vs inter-test approaches" />
+                <div class="caption">Taxonomy of prior data-driven approaches.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2c · Pipeline overview (uses figure_03_full_pipeline.png — previously unused) -->
+        <section data-section="Problem">
+          <div class="kicker">System overview</div>
+          <h2 class="titled">End-to-end pipeline at a glance</h2>
+          <div class="pill-row fragment" style="margin-bottom:0.5em;">
+            <span class="pill crimson">① Shape Encoder</span>
+            <span class="pill crimson">② HyperNetwork (CondNN)</span>
+            <span class="pill crimson">③ Pressure Estimator</span>
+            <span class="pill">④ Uncertainty — NCP</span>
+            <span class="pill">⑤ CFD Refinement — next</span>
+          </div>
+          <div class="figure fragment bare hero">
+            <img src="assets/img/ppt_original_geometry_condnn.png" alt="Original PPT geometry-aware Conditional Neural Network architecture" style="max-height:500px; width:auto;" />
+            <div class="caption">Original architecture: 3D geometry &rarr; point cloud embedding &rarr; latent variables &rarr; conditional weight generation &rarr; wind-pressure statistics.</div>
+          </div>
+        </section>
+
+      </section><!-- /Column 2 -->
+
+
+      <!-- ==============================================================
+           COLUMN 3 · METHOD  (section-divider + 1 content slide)
+      ============================================================== -->
+      <section>
+
+        <!-- 3a · Section divider -->
+        <section class="section-divider" data-background-color="#6A1226" data-section="Approach">
+          <div class="section-num" aria-hidden="true">02</div>
+          <div class="kicker" style="color:rgba(255,255,255,0.55);letter-spacing:0.22em;">Method</div>
+          <h2>Our Approach</h2>
+          <div class="section-rule"></div>
+          <p style="color:rgba(255,255,255,0.7);font-size:0.78em;">Conditional Neural Network &nbsp;&middot;&nbsp; HyperNetwork Architecture</p>
+        </section>
+
+        <!-- 3b · CondNN -->
+        <section data-section="Approach">
+          <div class="kicker">Our approach</div>
+          <h2 class="titled">Conditional Neural Network &mdash; a HyperNetwork</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <div class="figure fragment bare">
+                <svg class="native-arch" viewBox="0 0 980 520" role="img" aria-labelledby="condnn-arch-title condnn-arch-desc">
+                  <title id="condnn-arch-title">Conditional Neural Network HyperNetwork architecture</title>
+                  <desc id="condnn-arch-desc">A weight-generation sub-network consumes hyper inputs and generates layer weights for a pressure-estimation sub-network.</desc>
+                  <defs>
+                    <marker id="arrow-black" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f2328"></path>
+                    </marker>
+                    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b21f2d"></path>
+                    </marker>
+                  </defs>
+
+                  <rect x="184" y="22" width="772" height="226" rx="18" fill="none" stroke="#ff31e8" stroke-width="5" stroke-dasharray="16 14"></rect>
+                  <rect x="184" y="286" width="772" height="196" rx="18" fill="none" stroke="#ff31e8" stroke-width="5" stroke-dasharray="16 14"></rect>
+
+                  <text class="native-arch__side" x="96" y="82" text-anchor="middle">
+                    <tspan x="96">Weight</tspan><tspan x="96" dy="38">generation</tspan><tspan x="96" dy="38">sub-network</tspan><tspan x="96" dy="42">(WGSN)</tspan>
+                  </text>
+                  <text class="native-arch__side" x="96" y="344" text-anchor="middle">
+                    <tspan x="96">Parameter</tspan><tspan x="96" dy="38">estimation</tspan><tspan x="96" dy="38">sub-network</tspan><tspan x="96" dy="42">(PESN)</tspan>
+                  </text>
+
+                  <rect class="native-arch__input" x="208" y="58" width="92" height="116" rx="12"></rect>
+                  <text class="native-arch__input-text" x="254" y="104" text-anchor="middle"><tspan x="254">Hyper</tspan><tspan x="254" dy="32">Input</tspan></text>
+                  <rect class="native-arch__input" x="208" y="334" width="92" height="116" rx="12"></rect>
+                  <text class="native-arch__input-text" x="254" y="380" text-anchor="middle"><tspan x="254">Model</tspan><tspan x="254" dy="32">Input</tspan></text>
+
+                  <path class="native-arch__wire native-arch__bus" d="M300 116 H862"></path>
+                  <path class="native-arch__wire" d="M300 392 H334"></path>
+
+                  <g class="native-arch__layer-pair" transform="translate(348,0)">
+                    <rect class="native-arch__focus" x="-16" y="112" width="110" height="347" rx="18"></rect>
+                    <path class="native-arch__wire" d="M39 116 V156"></path>
+                    <rect class="native-arch__box" x="0" y="138" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="200" text-anchor="middle">WGM</text>
+                    <path class="native-arch__red" d="M39 246 V334"></path>
+                    <rect class="native-arch__box" x="0" y="334" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="380" text-anchor="middle"><tspan x="39">Dense</tspan><tspan x="39" dy="30">layer</tspan></text>
+                  </g>
+
+                  <g class="native-arch__layer-pair" transform="translate(474,0)">
+                    <path class="native-arch__wire" d="M39 116 V156"></path>
+                    <rect class="native-arch__box" x="0" y="138" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="200" text-anchor="middle">WGM</text>
+                    <path class="native-arch__red" d="M39 246 V334"></path>
+                    <rect class="native-arch__box" x="0" y="334" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="380" text-anchor="middle"><tspan x="39">Dense</tspan><tspan x="39" dy="30">layer</tspan></text>
+                  </g>
+
+                  <g class="native-arch__layer-pair" transform="translate(600,0)">
+                    <path class="native-arch__wire" d="M39 116 V156"></path>
+                    <rect class="native-arch__box" x="0" y="138" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="200" text-anchor="middle">WGM</text>
+                    <path class="native-arch__red" d="M39 246 V334"></path>
+                    <rect class="native-arch__box" x="0" y="334" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="380" text-anchor="middle"><tspan x="39">Dense</tspan><tspan x="39" dy="30">layer</tspan></text>
+                  </g>
+
+                  <g class="native-arch__layer-pair" transform="translate(726,0)">
+                    <path class="native-arch__wire" d="M39 116 V156"></path>
+                    <rect class="native-arch__box" x="0" y="138" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="200" text-anchor="middle">WGM</text>
+                    <path class="native-arch__red" d="M39 246 V334"></path>
+                    <rect class="native-arch__box" x="0" y="334" width="78" height="108"></rect>
+                    <text class="native-arch__box-text" x="39" y="380" text-anchor="middle"><tspan x="39">Dense</tspan><tspan x="39" dy="30">layer</tspan></text>
+                  </g>
+
+                  <path class="native-arch__wire" d="M426 388 H474"></path>
+                  <path class="native-arch__wire" d="M552 388 H600"></path>
+                  <path class="native-arch__wire" d="M678 388 H726"></path>
+                  <path class="native-arch__wire" d="M804 388 H838"></path>
+
+                  <rect class="native-arch__output" x="850" y="318" width="92" height="146" rx="14"></rect>
+                  <text class="native-arch__output-text" x="896" y="375" text-anchor="middle"><tspan x="896">Model</tspan><tspan x="896" dy="34">Output</tspan></text>
+                </svg>
+              </div>
+            </div>
+            <div class="col col-40">
+              <ul>
+                <li class="fragment">A <strong>Weight-Generation Sub-Network (WGSN)</strong> consumes wind condition + building geometry&hellip;</li>
+                <li class="fragment">&hellip;and <strong>generates the weights</strong> of a coordinate-based <strong>Pressure-Estimator Sub-Network (PESN)</strong>.</li>
+                <li class="fragment">PESN maps <strong>(x, y, z) &rarr;</strong> {mean, std, skewness, kurtosis}.</li>
+                <li class="fragment">One model solves <strong>intra- and inter-test interpolation together</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4b · Geometry bottleneck (3D building) -->
+        <section data-background-color="#ffffff" data-section="Approach">
+          <div class="kicker">The bottleneck</div>
+          <h2 class="titled">Three numbers cannot describe a low-rise building</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <p class="fragment"><strong>H, B, D</strong> &mdash; height, breadth, depth &mdash; collapse a 3D form into 3 scalars.</p>
+              <ul>
+                <li class="fragment">They ignore <strong>roof shape</strong>, <strong>footprint</strong>, setbacks, and re-entrant corners.</li>
+                <li class="fragment">Two different buildings can share the same H, B, D yet produce <em>very</em> different pressure fields.</li>
+                <li class="fragment">To generalize across a regional stock, we must encode the <strong>full 3D shape</strong>.</li>
+              </ul>
+            </div>
+            <div class="col col-40">
+              <div class="three-wrap" style="height:280px;" data-three-building>
+                <svg class="three-fallback" viewBox="0 0 400 280" preserveAspectRatio="xMidYMid meet"
+                     xmlns="http://www.w3.org/2000/svg" aria-label="Colored low-rise building (Cp field)"
+                     style="position:absolute; inset:0; width:100%; height:100%;">
+                  <defs>
+                    <linearGradient id="cpWind" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#A60F2D"/><stop offset="1" stop-color="#981E32"/>
+                    </linearGradient>
+                    <linearGradient id="cpSide" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0" stop-color="#3C8B98"/><stop offset="1" stop-color="#2A7F8E"/>
+                    </linearGradient>
+                    <linearGradient id="cpRoof" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#BFD7DB"/><stop offset="1" stop-color="#2A7F8E"/>
+                    </linearGradient>
+                  </defs>
+                  <ellipse cx="200" cy="240" rx="140" ry="18" fill="#000" opacity="0.06"/>
+                  <polygon points="232,118 320,94 320,206 232,230" fill="url(#cpSide)"/>
+                  <polygon points="92,136 232,118 232,230 92,244" fill="url(#cpWind)"/>
+                  <polygon points="92,136 232,118 272,90 152,106" fill="url(#cpRoof)"/>
+                  <polygon points="232,118 320,94 298,70 272,90" fill="#2A7F8E"/>
+                  <polygon points="152,106 272,90 298,70 178,86" fill="#BFD7DB"/>
+                  <g stroke="#2b2f33" stroke-opacity="0.22" stroke-width="1.4" fill="none">
+                    <polygon points="92,136 232,118 232,230 92,244"/>
+                    <polygon points="232,118 320,94 320,206 232,230"/>
+                    <polyline points="92,136 152,106 272,90 232,118"/>
+                    <polyline points="272,90 298,70 320,94"/>
+                  </g>
+                  <g stroke="#5E6A71" stroke-width="3" fill="#5E6A71">
+                    <line x1="20" y1="172" x2="74" y2="172"/>
+                    <polygon points="74,166 86,172 74,178"/>
+                  </g>
+                  <text x="20" y="162" font-family="Inter, sans-serif" font-size="12" fill="#5E6A71">wind</text>
+                </svg>
+                <div class="cp-legend">
+                  <div class="cp-bar"></div>
+                  <div class="cp-ticks"><span>&minus;0.8</span><span>C<sub>p</sub></span><span>+0.7</span></div>
+                </div>
+                <div class="three-hint">drag to rotate</div>
+              </div>
+              <div class="caption">Live 3D model — same H, B, D; many possible shapes.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4c · Geometry-aware encoding (Dora-VAE, shape database) -->
+        <section data-section="Approach">
+          <div class="kicker">Geometry encoding</div>
+          <h2 class="titled">Encode the full shape into a latent embedding</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <div class="figure fragment bare">
+                <img src="assets/img/dora_vae_reconstruction_u_shape.png" alt="Dora-VAE validation: original U-shaped building, reconstructed geometry, and overlay" style="max-height:260px;" />
+                <div class="caption">Dora-VAE validation: original point cloud, reconstructed geometry, and overlay for a U-shaped building.</div>
+              </div>
+              <div class="pill-row fragment" style="margin-top:0.35em;">
+                <span class="pill" style="opacity:0.62;">3DShape2VecSet (prior baseline)</span>
+                <span class="pill crimson">Dora-VAE &middot; 131,072-D &nbsp;&#10003; current</span>
+              </div>
+            </div>
+            <div class="col col-40">
+              <ul>
+                <li class="fragment">A <strong>3D autoencoder</strong> compresses the point cloud into a latent embedding that <strong>conditions the WGSN</strong>.</li>
+                <li class="fragment"><strong>Dora-VAE</strong> (current encoder): &gt;50% Chamfer-distance reduction vs prior baseline<br/><span class="small muted">0.08&ndash;0.22 &rarr; 0.034&ndash;0.051 on complex L/T/U shapes</span></li>
+                <li class="fragment">Shape database of <strong>1,450 buildings</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </section><!-- /Column 3 Approach -->
+
+
+      <!-- ==============================================================
+           COLUMN 5 · RESULTS  (section-divider + 2 content slides)
+      ============================================================== -->
+      <section>
+
+        <!-- 5a · Section divider -->
+        <section class="section-divider" data-background-color="#6A1226" data-section="Results">
+          <div class="section-num" aria-hidden="true">04</div>
+          <div class="kicker" style="color:rgba(255,255,255,0.55);letter-spacing:0.22em;">Results</div>
+          <h2>Model Accuracy</h2>
+          <div class="section-rule"></div>
+          <p style="color:rgba(255,255,255,0.7);font-size:0.78em;">Inter-test generalization &nbsp;&middot;&nbsp; Pressure-field reconstruction</p>
+        </section>
+
+        <!-- 5b · Result 1: Pressure fields -->
+        <section data-section="Results">
+          <div class="kicker">Result 1 &middot; Inter-test generalization</div>
+          <h2 class="titled">Predicted pressure fields match wind-tunnel measurements</h2>
+          <div class="cols top">
+            <div class="col col-65">
+              <div class="figure fragment bare">
+                <img src="assets/img/figure_07_pressure_map_comparison.png" alt="Measured vs predicted surface pressure maps across surfaces and wind angles" />
+              </div>
+            </div>
+            <div class="col col-35">
+              <ul>
+                <li class="fragment">Measured vs predicted <strong>surface pressure maps</strong> agree across surfaces&hellip;</li>
+                <li class="fragment">&hellip;and across <strong>wind angles</strong>, including buildings held out of training.</li>
+                <li class="fragment">Model captures <strong>windward stagnation</strong> and <strong>edge / roof suction</strong>.</li>
+              </ul>
+              <div class="note-box fragment" style="margin-top:0.5em;">Generalization to <strong>unseen geometry</strong> &mdash; the inter-test axis &mdash; validated.</div>
+            </div>
+          </div>
+        </section>
+
+        <section data-section="Results">
+          <div class="kicker">Uncertainty quantification &middot; ongoing</div>
+          <h2 class="titled">Neighborhood Conformal Prediction (NCP) is in progress</h2>
+          <div class="figure fragment bare hero" style="margin-top:0.15em;">
+            <img src="assets/img/figure_cp_vs_ncp_concept.png" alt="Conceptual comparison of standard conformal prediction and neighborhood conformal prediction" style="max-height:430px; width:auto;" />
+            <div class="caption">Standard CP uses one global calibration quantile; NCP calibrates with nearby buildings in geometry or embedding space.</div>
+          </div>
+          <div class="pill-row fragment" style="justify-content:center; margin-top:0.4em;">
+            <span class="pill crimson">Ongoing validation</span>
+            <span class="pill">target: calibrated coverage</span>
+            <span class="pill">target: geometry-specific intervals</span>
+            <span class="pill">goal: flag out-of-distribution geometries</span>
+          </div>
+        </section>
+        <section data-section="Results">
+          <div class="kicker">Next step</div>
+          <h2 class="titled">CFD-assisted refinement of the surrogate</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <div class="figure fragment bare">
+                <img src="assets/img/figure_13_cfd_refinement.png" alt="CFD-in-the-loop refinement of high-uncertainty buildings" />
+              </div>
+            </div>
+            <div class="col col-40">
+              <ul>
+                <li class="fragment">Use NCP to identify high-uncertainty buildings for <strong>OpenFOAM RANS</strong> runs.</li>
+                <li class="fragment">Candidate CFD campaign: <strong>2,204 cases</strong>, with convergence and agreement checks.</li>
+                <li class="fragment">Feed corrective samples back where the surrogate is least confident.</li>
+              </ul>
+              <div class="figure fragment bare" style="width:100%; margin-top:0.45em;">
+                <img src="assets/img/figure_07_cfd_loop.png" alt="CFD-in-the-loop schematic" style="width:100%; max-height:150px; object-fit:contain;" />
+                <div class="caption">Uncertainty &rarr; CFD &rarr; retrain.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section><!-- /Column 4 Results -->
+
+
+      <!-- ==============================================================
+           COLUMN 8 · SUMMARY  (single slide)
+      ============================================================== -->
+      <section>
+        <section data-background-color="#ffffff" data-section="Summary">
+          <div class="kicker">Summary &amp; impact</div>
+          <h2 class="titled">Scalable wind-load estimation for regional risk assessment</h2>
+          <div class="cols top">
+            <div class="col col-60">
+              <ul>
+                <li class="fragment"><strong>Geometry-aware Conditional NN</strong> &mdash; full 3D shape conditions weight generation.</li>
+                <li class="fragment"><strong>Current result:</strong> Geometry-aware prediction validated on held-out buildings; encoder and training refinement ongoing.</li>
+                <li class="fragment"><strong>Ongoing UQ work:</strong> Neighborhood Conformal Prediction for local calibration.</li>
+                <li class="fragment"><strong>Next step:</strong> CFD-in-the-loop refinement where confidence is lowest.</li>
+                <li class="fragment"><em>Value:</em> <strong>scalable wind pressure estimation</strong> for rapid fragility assessment and <strong>portfolio-level risk &amp; loss analysis</strong> under extreme wind hazards.</li>
+                <li class="fragment"><em>Future work:</em> high-rise buildings &amp; urban context effects.</li>
+              </ul>
+            </div>
+            <div class="col col-40">
+              <div class="stat-card fragment pop">
+                <div class="stat-number" style="font-size:1.25em;">Current</div>
+                <div class="stat-label">geometry-aware surrogate validated on unseen geometry</div>
+              </div>
+              <div class="stat-card fragment pop">
+                <div class="stat-number" style="font-size:1.25em;">Ongoing</div>
+                <div class="stat-label">NCP for local uncertainty calibration</div>
+              </div>
+              <div class="stat-card fragment pop">
+                <div class="stat-number" style="font-size:1.25em;">Next</div>
+                <div class="stat-label">CFD-in-the-loop corrective sampling</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section><!-- /Column 8 -->
+
+
+    </div><!-- /.slides -->
+  </div><!-- /.reveal -->
+
+
+  <!-- =============================================================
+       reveal.js init
+       - progress: false    →  custom bar (deck-progress.js) used
+       - slideNumber: false →  custom meta pill used
+       - linear navigation mode — L/R arrows walk all slides in order
+         regardless of vertical nesting; 2-D grid visible in Overview.
+  ============================================================= -->
+  <script type="module">
+    import Reveal from "./vendor/reveal/reveal.esm.js";
+    import Notes  from "./vendor/reveal/plugin/notes/notes.esm.js";
+    import Zoom   from "./vendor/reveal/plugin/zoom/zoom.esm.js";
+
+    const deck = new Reveal({
+      hash:                true,
+      slideNumber:         false,      // custom meta pill
+      transition:          "slide",
+      transitionSpeed:     "default",
+      backgroundTransition:"fade",
+      controls:            true,
+      progress:            false,      // custom progress bar
+      overview:            true,
+      center:              true,
+      width:               1280,
+      height:              720,
+      margin:              0.045,
+      minScale:            0.2,
+      maxScale:            2.0,
+      navigationMode:      "linear",   // L/R arrows traverse all slides in order
+      pdfMaxPagesPerSlide: 1,
+      pdfSeparateFragments:false,
+      plugins: [ Notes, Zoom ],
+    });
+
+    function syncProgress() {
+      try {
+        var total = deck.getTotalSlides();
+        var current = deck.getSlidePastCount() + 1;
+        var pct = deck.getProgress() * 100;
+        var fill = document.getElementById('prog-fill');
+        if (fill) fill.style.width = pct.toFixed(1) + '%';
+        var pos = document.getElementById('prog-pos');
+        if (pos) pos.textContent = current + ' / ' + total;
+        var sec = document.getElementById('prog-section');
+        var slide = deck.getCurrentSlide();
+        var dsAttr = 'data-' + 'section';
+        var label = slide ? (slide.getAttribute(dsAttr) || (slide.closest('section[' + dsAttr + ']') ? slide.closest('section[' + dsAttr + ']').getAttribute(dsAttr) : '')) : '';
+        if (sec) sec.textContent = label || '';
+        var bar = document.querySelector('.deck-progress');
+        if (bar) bar.setAttribute('aria-valuenow', Math.round(pct));
+      } catch (e) {}
+    }
+
+    deck.initialize().then(() => {
+      window.Reveal = deck;   // expose for three-building.js and deck-progress.js
+      syncProgress();
+    });
+
+    deck.on('slidechanged', syncProgress);
+
+    // Overview toolbar button
+    document.getElementById("btn-overview").addEventListener("click", () => deck.toggleOverview());
+  </script>
+
+  <!-- Interactive colored 3D building — loaded as module so it defers naturally -->
+  <script type="module" src="assets/js/three-building.js"></script>
+  <!-- Custom progress bar driver — progress logic is now inline above; this file stays as a no-op fallback -->
+  <script type="module" src="assets/js/deck-progress.js"></script>
+
+</body>
+</html>

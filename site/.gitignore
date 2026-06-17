@@ -1,0 +1,3 @@
+# PDF-export tooling (decktape + puppeteer Chromium) — local only, not deployed
+tools/node_modules/
+tools/package-lock.json
